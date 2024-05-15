@@ -44,6 +44,5 @@ class Todo(db.Model):
             return "Yes"
         else:    
             return "No"
-        
-    
+
     

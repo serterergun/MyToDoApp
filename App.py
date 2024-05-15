@@ -1,8 +1,8 @@
 ###############################################################################
-## Sprint 6: Advanced To-DO Details
-## Feature 1: Add Additional Details to To-Do Items
-## User Story 1: Add Due Date, Priority, Notes and Completion Status to To-Do item
-############################################################################
+## Sprint 7: Advanced Styling in your Web Application
+## Feature 1: Advanced Web App Styling
+## User Story 5: Show spinner when loading recommendations
+###############################################################################
 import os
 import json
 from flask import Flask, render_template, request, redirect, url_for, g
@@ -19,12 +19,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-with app.app_context():
-    db.create_all()
-
 @app.context_processor
 def inject_common_variables():
     return inject_current_date()
+
+with app.app_context():
+    db.create_all()
 
 @app.before_request
 def load_data_to_g():
@@ -33,7 +33,6 @@ def load_data_to_g():
     g.todo = None
     g.TabEnum = Tab
     g.selectedTab = Tab.NONE
-    
 
 @app.route("/")
 def index():
@@ -112,8 +111,9 @@ def update_todo(id):
 
 
 # Delete a ToDo
-@app.route('/remove/<int:id>', methods=["POST"])
+@app.route('/remove/<int:id>', methods=["POST", "GET"])
 def remove_todo(id):
+    g.selectedTab = Tab.NONE
     db.session.delete(Todo.query.filter_by(id=id).first())
     db.session.commit()
     return redirect(url_for('index'))
@@ -164,12 +164,12 @@ def completed(id, complete):
         g.todo.completed = True
     elif (g.todo != None and complete == "false"):
         g.todo.completed = False
-
-    #update todo in the database
+    #
     db.session.add(g.todo)
     db.session.commit()
     #
-    return redirect(url_for('index'))    
+    return redirect(url_for('index'))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
